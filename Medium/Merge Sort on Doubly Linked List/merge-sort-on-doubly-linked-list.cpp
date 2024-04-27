@@ -28,83 +28,95 @@ struct Node
 };
 */
 class Solution {
-  public:
-    struct Node* merge(struct Node *left, struct Node *right){
-        struct Node *ans = NULL;
-        if(left->data < right->data){
-            ans = left;
-            left = left->next;
-        }else{
-            ans = right;
-            right = right->next;
+  private:
+    // TC : O(N) Where N = No. Of Nodes
+    // SC : O(1) 
+    struct Node* getMiddle(struct Node* head) {
+        struct Node* slow = head;
+        struct Node* fast = head;
+        
+        while(fast -> next && fast -> next -> next) {
+            slow = slow -> next;
+            fast = fast -> next -> next;
         }
-        
-        struct Node *tail = ans;
-        while(left != NULL && right != NULL){
-            if(left->data < right->data){
-                struct Node *x = left;
-                tail->next = x;
-                x->prev = tail;
-                tail = tail->next;
-                left = left->next;
-            }else{
-                struct Node *x = right;
-                tail->next = x;
-                x->prev = tail;
-                tail = tail->next;
-                right = right->next;
-            }
-        }
-        while(left != NULL){
-            struct Node *x = left;
-            tail->next = x;
-            x->prev = tail;
-            tail = tail->next;
-            left = left->next;
-        }
-        while(right != NULL){
-            struct Node *x = right;
-            tail->next = x;
-            x->prev = tail;
-            tail = tail->next;
-            right = right->next;
-        }
-        
-        tail->next = NULL;
-        return ans;
-    }
-  
-    struct Node* mergesort(struct Node* head, int n){
-        if(n <= 1)
-            return head;
-        
-        int mid = (n-1)/2;
-        int curr = 0;
-        struct Node *temp1 = head;
-        while(curr < mid){
-            temp1 = temp1->next;
-            curr++;
-        }
-        
-        struct Node *temp2 = temp1->next;
-        temp1->next = NULL;
-        temp2->prev = NULL;
-        
-        struct Node *left = mergesort(head, mid+1);
-        struct Node *right = mergesort(temp2, n-mid-1);
-        
-        return merge(left, right);
+        return slow;
     }
     
+    // TC : O(N + M) Where N = No. Of Nodes in 1st List & M = No. Of Nodes in 2nd List
+    // SC : O(N) -> Recursive Depth
+    struct Node* mergeRec(struct Node* first, struct Node* second) {
+        if (!first) return second;
+        if (!second) return first;
+
+        if (first -> data < second -> data) {
+            first -> next = mergeRec(first -> next, second);
+            first -> next -> prev = first;
+            first -> prev = NULL;
+            return first;
+        } else {
+            second -> next = mergeRec(first, second -> next);
+            second -> next -> prev = second;
+            second -> prev = NULL;
+            return second;
+        }
+    }
+    
+    // TC : O(N + M)
+    // SC : O(1)
+    struct Node* merge(struct Node* &left, struct Node* &right) {
+        struct Node* mergedList = NULL;
+        struct Node** current   = &mergedList;
+        struct Node* prev = NULL;
+    
+        while(left != NULL && right != NULL) {
+            if(left -> data <= right -> data) {
+                *current = left;
+                left = left -> next;
+            } else {
+                *current = right;
+                right = right -> next;
+            }
+            (*current) -> prev = prev;
+            prev = *current;
+            current = &((*current) -> next);
+        }
+    
+        while(left != NULL) {
+            *current = left;
+            left = left -> next;
+            (*current) -> prev = prev;
+            prev = *current;
+            current = &((*current) -> next);
+        } 
+    
+        while(right != NULL) {
+            *current = right;
+            right = right -> next;
+            (*current) -> prev = prev;
+            prev = *current;
+            current = &((*current) -> next);
+        }
+    
+        return mergedList;
+    }
+  public:
+    // TC : O(N*Log(N))
+    // SC : O(Log(N))   Where N = No. of Nodes
     // Function to sort the given doubly linked list using Merge Sort.
     struct Node *sortDoubly(struct Node *head) {
-        int n = 0;
-        struct Node *temp = head;
-        while(temp != NULL){
-            n++;
-            temp = temp->next;
-        }
-        return mergesort(head, n);
+        if (!head || !head -> next) return head;
+        
+        struct Node* middle  = getMiddle(head);
+        struct Node* midNext = middle -> next;
+        middle  -> next = NULL;
+        midNext -> prev = NULL;
+        
+        struct Node* left  = sortDoubly(head);
+        struct Node* right = sortDoubly(midNext);
+        
+        // return mergeRec(left, right);    // SC : O(Rec Depth)
+        
+        return merge(left, right);          // SC : O(1)
     }
 };
 
