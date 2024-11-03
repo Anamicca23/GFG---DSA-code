@@ -6,29 +6,25 @@ using namespace std;
 // } Driver Code Ends
 // Function to return minimum number of jumps to end of array
 
-
 class Solution {
   public:
     int minJumps(vector<int>& arr) {
-        // Your code here
-        int jump = 0;
-        int n = arr.size();
-        int maxi=0;
-        int mrange=0;
-        
-        for(int i=0;i<n;i++){
-            maxi=max(maxi,arr[i]+i);
-            if(mrange==i){
-                mrange=maxi;
-                jump++;
-                if(mrange>=n-1)
-                {
-                  return jump;
+        // code here
+        if(arr[0]==0)return -1;
+        if(arr.size()==1)return 1;
+        int jumps=0,curr=0;
+        int far=0;
+        for(int i=0;i<arr.size()-1;i++){
+            far=max(arr[i]+i,far);
+            if(curr==i){
+                jumps++;
+                curr=far;
+                if(curr>=arr.size()-1){
+                    break;
                 }
             }
         }
-        
-        return -1;
+        return (curr>=arr.size()-1)?jumps:-1;
     }
 };
 
@@ -51,7 +47,7 @@ int main() {
             arr.push_back(number);
         }
         Solution obj;
-        cout << obj.minJumps(arr) << endl;
+        cout << obj.minJumps(arr) << endl << "~\n";
     }
     return 0;
 }
