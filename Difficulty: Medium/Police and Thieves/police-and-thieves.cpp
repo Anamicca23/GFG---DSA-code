@@ -1,34 +1,27 @@
-class Solution {
-  public:
-    int catchThieves(vector<char> &arr, int k) {
-        // Code here
-        int police = 0;
-        int thief = 0;
-        int count = 0;
-        while(police < arr.size() && thief < arr.size()){
-            if(arr[police] != 'P'){
-                police++;
+class Solution
+{
+public:
+    int catchThieves(vector<char> &arr, int k)
+    {
+        queue<pair<char, int>> q;
+        int ans = 0;
+        for (int i = 0; i < arr.size(); i++)
+        {
+            char curr = arr[i];
+            // Cleaning of beyond k distance
+            while (!q.empty() && i - q.front().second > k)
+                q.pop();
+
+            if (!q.empty() && q.front().first != curr)
+            {
+                ans++;
+                q.pop();
             }
-            else if(arr[thief] != 'T'){
-                thief++;
-            }
-            else{
-                if(abs(police - thief) <= k){
-                    count++;
-                    police++;
-                    thief++;
-                }
-                else{
-                    if(thief < police){
-                        thief++;
-                    }
-                    else{
-                        police++;
-                    }
-                }
+            else
+            {
+                q.push({curr, i});
             }
         }
-        return count;
+        return ans;
     }
 };
-
