@@ -1,50 +1,18 @@
-//{ Driver Code Starts
-// Initial Template for C++
-
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
-// User template code in C++
-
 class Solution {
   public:
-    bool sentencePalindrome(string &s) {
+    bool isPalinSent(string &s) {
         // code here
-        string s1 = "";
-        for (char ch : s) {
-            if (isalnum(ch)) {
-                s1.push_back(tolower(ch));
-            }
+      string cleaned = "";
+
+        for (char c : s) {
+          if (isalnum(c)) {
+            cleaned += tolower(c);
+          }
         }
-    
-        // find reverse of this new string
-        string rev = s1;
-        reverse(rev.begin(), rev.end());
-    
-        // compare string and its reverse
-        return s1 == rev;
-            
+
+        string reversed = cleaned;
+        reverse(reversed.begin(), reversed.end());
+
+      return cleaned == reversed;
     }
 };
-
-//{ Driver Code Starts.
-
-int main() {
-    int t;
-    cin >> t;
-    cin.ignore();
-    while (t--) {
-        string s;
-        getline(cin, s);
-        Solution ob;
-        if (ob.sentencePalindrome(s))
-            cout << "true" << endl;
-        else
-            cout << "false" << endl;
-    }
-    return 0;
-}
-
-// } Driver Code Ends
