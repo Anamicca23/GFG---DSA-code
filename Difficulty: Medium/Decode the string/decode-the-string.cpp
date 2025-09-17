@@ -1,73 +1,33 @@
-//{ Driver Code Starts
-// Initial Template for C++
-
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
-
-
 class Solution {
   public:
     string decodedString(string &s) {
-        // code here
-        int n = s.length();
-        if(n==0)return s;
-        stack<int>st;
-        stack<string>str;
-        string temp = "";
+        stack<string> strStack;
+        stack<int> numStack;
+        string res = "";
         int num = 0;
-        for(int i=0;i<n;i++)
-        {
-            if(isdigit(s[i]))
-            {
-                num = num * 10 + (s[i] - '0');
-            }
-            else if(s[i] == '[')
-            {
-                st.push(num);
+
+        for (char c : s) {
+            if (isdigit(c)) {
+                num = num * 10 + (c - '0');
+            } else if (isalpha(c)) {
+                res += c;
+            } else if (c == '[') {
+                strStack.push(res);
+                numStack.push(num);
+                res = "";
                 num = 0;
-                str.push(temp);
-                temp = "";
-            }
-            else if(s[i] == ']')
-            {
-                int k = st.top();
-                st.pop();
-                for(int j = 1; j<= k; j++)
-                {
-                    str.top() += temp;
+            } else if (c == ']') {
+                string temp = res;
+                res = strStack.top();
+                strStack.pop();
+                int count = numStack.top();
+                numStack.pop();
+                while (count--) {
+                    res += temp;
                 }
-                temp = str.top();
-                str.pop();
-            }
-            else
-            {
-                temp += s[i];
             }
         }
-        return temp;
+        
+        return res;
     }
 };
-
-
-
-//{ Driver Code Starts.
-
-int main() {
-    int t;
-    cin >> t;
-    while (t--) {
-        string s;
-        cin >> s;
-
-        Solution ob;
-        cout << ob.decodedString(s) << "\n";
-
-        cout << "~"
-             << "\n";
-    }
-    return 0;
-}
-// } Driver Code Ends
