@@ -1,30 +1,22 @@
 class Solution {
   public:
-     vector<int> findGreater(vector<int>& arr) {
-        int n=arr.size();
-        vector<int>ans(n);
-        unordered_map<int,int>mp;
+    vector<int> nextFreqGreater(vector<int>& arr) {
+        vector<int> res(arr.size(), -1);
+        stack<int> st;
+        map<int,int> mp;
         
-        for(int i=0; i<n; i++){
-            mp[arr[i]]++;
-        }
-        stack<int>st;
-        st.push(arr[n-1]);
-        ans[n-1]=-1;
-        
-        for(int i=n-2; i>=0; i--){
-            
-            while(st.size()>0 && mp[arr[i]] >= mp[st.top()]){
+        for(int i = 0;i<arr.size();i++)mp[arr[i]]++;
+        for(int i = 0;i<arr.size();i++){
+            if(st.empty())st.push(i);
+            else{
+                while(!st.empty()  and mp[arr[i]]>mp[arr[st.top()]]){
+                    res[st.top()] = arr[i];
+                    st.pop();
+                }
                 
-            st.pop();
-            
+                st.push(i);
             }
-           
-            if(st.size() >0 ) ans[i]=st.top();
-            else ans[i]=-1;
-            
-            st.push(arr[i]);
         }
-        return ans;
+        return res;
     }
 };
