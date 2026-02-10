@@ -1,27 +1,30 @@
 class Solution {
-public:
+  public:
+    bool good(vector<int>& arr, int mid, int k){
+        int n=arr.size();
+        int ans=0;
+        for(int i=0;i<n;i++){
+            ans+=ceil((double)arr[i]/mid);
+            
+        }
+        return k>=ans;
+    }
     int kokoEat(vector<int>& arr, int k) {
-        int n = arr.size();
-        int left = 1, right = *max_element(arr.begin(), arr.end());
-        int result = right;
-
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            int totalHours = 0;
-
-            for (int i = 0; i < n; i++) {
-                // Correct way to compute hours to eat each pile
-                totalHours += (arr[i] + mid - 1) / mid; // equivalent to ceil(arr[i] / mid)
+        // Code here
+        int n=arr.size();
+        int i=1;
+        int j=*max_element(arr.begin(),arr.end());
+        int ans=0;
+        while(i<=j){
+            int mid=i+(j-i)/2;
+            if(good(arr,mid,k)){
+                ans=mid;
+                j=mid-1;
             }
-
-            if (totalHours <= k) {
-                result = mid;          // possible answer, but try to minimize
-                right = mid - 1;
-            } else {
-                left = mid + 1;        // too slow, need to eat faster
+            else{
+                i=mid+1;
             }
         }
-
-        return result;
+        return ans;
     }
-}; 
+};
