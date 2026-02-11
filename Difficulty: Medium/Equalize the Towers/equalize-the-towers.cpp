@@ -1,34 +1,31 @@
 class Solution {
   public:
-     int check(int mid,vector<int>&height,vector<int>&cost){
-        int ans=0;
-        for(int i=0;i<height.size();i++){
-            ans+=abs(height[i]-mid)*(cost[i]);
+    int getCost(vector<int>& heights, vector<int>& cost, int h){
+        int cst = 0;
+        for(int i = 0;i<heights.size();i++){
+            cst += cost[i]*(abs(heights[i] - h));
         }
-        return ans;
+        return cst;
     }
     int minCost(vector<int>& heights, vector<int>& cost) {
-        // code here
-        int ans=0;
-        int l=1;
-        int h=1000000;
-        while(l<=h){
-            int mid=(l+h)/2;
-            auto current=check(mid,heights,cost);
-            auto up=check(mid+1,heights,cost);
-            auto down=check(mid-1,heights,cost);
-            if(current<up and current>down){
-                // move to down
-                h=mid-1;
+        int l = 1, r = 1e4+1, mincost = 0;
+        while(l<=r){
+            int m = l+(r-l)/2;
+            
+            int prev = getCost(heights, cost, m-1);
+            int curr = getCost(heights, cost, m);
+            int next = getCost(heights, cost, m+1);
+            
+            if(prev>=curr and curr<=next){
+                return curr;
             }
-            else if(current>up and current<down){
-                l=mid+1;
+            if(prev>=curr and curr>=next){
+                l = m+1;
             }
             else{
-                ans=current;
-                return ans;
+                r = m-1;
             }
         }
-        return ans;
+        return -1;
     }
 };
