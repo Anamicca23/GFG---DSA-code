@@ -1,69 +1,60 @@
-//{ Driver Code Starts
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
-
 class Solution {
   public:
-    // Function to count inversions in the array.
-     int count=0;
-     void merge(vector<int>&arr, int l, int m, int r) {
-      int j=m+1;
-      for(int i=l;i<=m;i++){
-          while(j<=r && arr[i]>arr[j]){
-              j++;
-          }
-          count+=(j-(m+1));
+    virtual int merge(int s, int e, int m, vector<int> &arr){
+      
+      int ln=m-s+1, rn=e-m;
+      vector<int> left(ln);
+      vector<int> right(rn);
+      
+      int k=s;
+      while(k<=m){
+        left[k-s]=arr[k]; k++;  
       }
-      sort(arr.begin()+l,arr.begin()+r+1);
+      
+      k=m+1;
+      while(k<=e){
+        right[k-m-1]=arr[k]; k++;  
+      }
+      
+      k=s;
+      int ans=0;
+      int l=0, r=0;
+      
+      while(l<ln && r<rn){
+        if(left[l] <= right[r]){
+          arr[k++] = left[l++];    
+        }else{
+          arr[k++] = right[r++];
+          ans += (ln-l);
+        }  
+      }
+      
+      while(l<ln){
+        arr[k++] = left[l++];  
+      }
+      
+      while(r<rn){
+        arr[k++] = right[r++];  
+      }
+      
+      return ans;      
     }
     
-    void mergeSort(vector<int>&arr, int s,int  e){
-        if(s>=e){
-            return;
-        }
-        // cout<<"hi";
-        int  mid=s+(e-s)/2;
-      //  cout<<"hi";
-        mergeSort(arr,s,mid);
-        mergeSort(arr,mid+1,e);
-        merge(arr,s,mid,e);
-        
-      }
-    int inversionCount(vector<int>&arr)
-    {
-        
-        int start=0;
-        int end=arr.size()-1;
-       mergeSort(arr,start,end); 
-       return count;
+    
+    virtual int mergeSort(int s, int e, vector<int> &arr){
+      if(s>=e) return 0;
+      int ans=0;
+      int m=s+(e-s)/2;
+      
+      ans += mergeSort(s, m, arr);
+      ans += mergeSort(m+1, e, arr);
+      ans += merge(s, e, m, arr);
+      
+      return ans;
+    }
+    
+    virtual int inversionCount(vector<int> &arr) {
+      int n=arr.size();
+      return mergeSort(0, n-1, arr);
     }
 };
-
-//{ Driver Code Starts.
-
-int main() {
-
-    int T;
-    cin >> T;
-    cin.ignore();
-    while (T--) {
-        int n;
-        vector<int> a;
-        string input;
-        getline(cin, input);
-        stringstream ss(input);
-        int num;
-        while (ss >> num)
-            a.push_back(num);
-        Solution obj;
-        cout << obj.inversionCount(a) << endl;
-        cout << "~" << endl;
-    }
-
-    return 0;
-}
-
-// } Driver Code Ends
