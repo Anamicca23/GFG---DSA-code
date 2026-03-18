@@ -1,25 +1,31 @@
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int x) {
+        data = x;
+        left = right = nullptr;
+    }
+};
+*/
+
 class Solution {
   public:
-    int moves = 0;
-
-    // Helper DFS function to balance candies
-    int dfs(Node* root) {
-        if (!root) return 0;
-
-        int left = dfs(root->left);   // candies to move from left subtree
-        int right = dfs(root->right); // candies to move from right subtree
-
-        // total moves = moves required in both subtrees
-        moves += abs(left) + abs(right);
-
-        // return the net balance of candies for this node
-        // (positive => extra candies, negative => needs candies)
-        return root->data + left + right - 1;
+    pair<int,int> solve(Node* root){
+        if(!root)return {0,0};
+        pair<int,int> l = solve(root->left);
+        pair<int,int> r = solve(root->right);
+        
+        int cnt = root->data + l.first + r.first - 1;
+        int cost = abs(cnt) + l.second + r.second;
+        
+        return {cnt, cost};
     }
-
     int distCandy(Node* root) {
-        moves = 0;
-        dfs(root);
-        return moves;
+        pair<int,int>  p = solve(root);
+        return p.second;
     }
 };
