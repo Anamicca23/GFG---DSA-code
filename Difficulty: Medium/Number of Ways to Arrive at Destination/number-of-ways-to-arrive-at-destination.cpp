@@ -1,45 +1,42 @@
 class Solution {
-  public:
+public:
     int countPaths(int V, vector<vector<int>>& edges) {
-        // code here
-         vector<pair<int,int>> adj[V];
-        priority_queue<pair<int,int>, 
-                       vector<pair<int,int>> ,
-                       greater<pair<int,int>>> pq;
-                       
-        vector<int> dist(V,INT_MAX), ways(V,0);
         
-        for(int i = 0; i < edges.size(); i++)
-        {
-            adj[edges[i][0]].push_back({edges[i][1],edges[i][2]});
-            adj[edges[i][1]].push_back({edges[i][0],edges[i][2]});
-            
+        vector<pair<int,int>> adj[V];
+        for(auto &e : edges){
+            adj[e[0]].push_back({e[1], e[2]});
+            adj[e[1]].push_back({e[0], e[2]});
         }
+
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
+
+        vector<int> dist(V, 1e9);  
+        vector<int> ways(V, 0);    
+
         dist[0] = 0;
         ways[0] = 1;
-        pq.push({0,0});
-        
-        while(pq.size())
-        {
-            int node = pq.top().second;
-            int node_dist = pq.top().first;
-            pq.pop();
-            for(auto it: adj[node])
-            {
-                int adjNode = it.first;
-                int adjDist = it.second;
-                if(node_dist + adjDist < dist[adjNode])
-                {
-                    dist[adjNode] =  node_dist + adjDist;
-                    ways[adjNode] =  ways[node];
-                    pq.push({dist[adjNode],adjNode});
+        pq.push({0, 0});
+
+        while(!pq.empty()){
+            auto it = pq.top(); pq.pop();
+            int d = it.first;
+            int node = it.second;
+
+            for(auto &nbr : adj[node]){
+                int next = nbr.first;
+                int wt = nbr.second;
+
+                if(d + wt < dist[next]){
+                    dist[next] = d + wt;
+                    ways[next] = ways[node];
+                    pq.push({dist[next], next});
                 }
-                else if(node_dist + adjDist == dist[adjNode])
-                {
-                    ways[adjNode] +=  ways[node];    
+                else if(d + wt == dist[next]){
+                    ways[next] += ways[node];
                 }
             }
         }
+
         return ways[V-1];
     }
 };
