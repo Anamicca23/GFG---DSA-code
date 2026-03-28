@@ -1,90 +1,52 @@
-//{ Driver Code Starts
-#include <bits/stdc++.h>
-using namespace std;
-
-
-// } Driver Code Ends
-
 class Solution {
-public:
-    void dfs(int u, int parent, vector<int>& disc, vector<int>& low, vector<bool>& visited, set<int>& articulationPoints, vector<vector<int>>& adj, int& time) {
-        visited[u] = true;
-        disc[u] = low[u] = ++time;
-        int children = 0;
-        for (int v : adj[u]) {
-            if (!visited[v]) {
-                children++;
-                dfs(v, u, disc, low, visited, articulationPoints, adj, time);
-                
-                // Check if the subtree rooted at v has a connection back to one of the ancestors of u
-                low[u] = min(low[u], low[v]);
-
-                // u is an articulation point if the lowest vertex reachable from subtree under v is below u in DFS tree
-                if (low[v] >= disc[u] && parent != -1) {
-                    articulationPoints.insert(u);
-                }
-            } else if (v != parent) { // Update low value of u for parent function calls
-                low[u] = min(low[u], disc[v]);
+    private:
+    void GET_DFS(int node, vector<int> &disc, vector<int> &low, vector<int> &vis, vector<int> &art, vector<int> adj[], int &timer, int parent){
+        vis[node]=1;
+        low[node]=disc[node]=timer;
+        int count=0;
+        for(auto i: adj[node]){
+            if(i==parent)continue;
+            if(vis[i]){
+                low[node]= min(low[node], disc[i]);
             }
-        }
-
-        // If u is root of DFS tree and has two or more children
-        if (parent == -1 && children > 1) {
-            articulationPoints.insert(u);
+            else{
+                timer++;
+                count++;
+                GET_DFS(i,disc, low, vis, art, adj, timer, node);
+                if(low[i]>=disc[node] and parent!=-1){
+                    art[node]=1;
+                }
+                low[node]= min(low[node], low[i]);
+            }
+            if(count>1 and parent==-1)
+            art[node]=1;
         }
     }
-
+  public:
     vector<int> articulationPoints(int V, vector<vector<int>>& edges) {
-        vector<vector<int>> adj(V);
-        for (const auto& edge : edges) {
-            adj[edge[0]].push_back(edge[1]);
-            adj[edge[1]].push_back(edge[0]);
+        // Code here
+        vector<int> disc(V, 0);
+        vector<int> low(V, 0);
+        vector<int> art(V, 0);
+        vector<int> vis(V, 0);
+        vector<int> ans;
+        vector<int> adj[V];
+        for(int i=0; i<edges.size(); i++){
+            int u= edges[i][0];
+            int v= edges[i][1];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
         }
-
-        vector<int> disc(V, -1), low(V, -1);
-        vector<bool> visited(V, false);
-        set<int> articulationPoints;
-        int time = 0;
-
-        for (int i = 0; i < V; i++) {
-            if (!visited[i]) {
-                dfs(i, -1, disc, low, visited, articulationPoints, adj, time);
+        int timer=0;
+        for(int i=0; i<V; i++){
+            if(!vis[i]){
+                GET_DFS(i, disc, low, vis, art, adj, timer, -1);
             }
         }
-
-        vector<int> result(articulationPoints.begin(), articulationPoints.end());
-        if (result.empty()) {
-            return {-1};
-        }
-        return result;
+        for(int i=0; i<V; i++)
+        if(art[i]==1)ans.push_back(i);
+        if(ans.empty())return {-1};
+        return ans;
     }
 };
 
-
-
-//{ Driver Code Starts.
-int main() {
-    int tc;
-    cin >> tc;
-    while (tc--) {
-        int V, E;
-        cin >> V >> E;
-        vector<vector<int>> edges;
-        for (int i = 0; i < E; i++) {
-            int u, v;
-            cin >> u >> v;
-            edges.push_back({u, v});
-        }
-        Solution obj;
-        vector<int> ans = obj.articulationPoints(V, edges);
-        sort(ans.begin(), ans.end());
-        for (auto i : ans)
-            cout << i << " ";
-        cout << "\n";
-
-        cout << "~"
-             << "\n";
-    }
-    return 0;
-}
-// } Driver Code Ends
